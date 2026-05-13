@@ -481,12 +481,17 @@
 
         const q = query(
           collection(db, "users", uid, "payments"),
-          where("lenderId", "==", lender.id),
-          orderBy("date", "desc"),
-          orderBy("createdAt", "desc")
+          where("lenderId", "==", lender.id)
         );
         const unsub2 = onSnapshot(q, snap => {
-          state.payments[lender.id] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          state.payments[lender.id] = snap.docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => {
+              if (b.date !== a.date) return b.date.localeCompare(a.date);
+              const at = a.createdAt?.seconds ?? 0;
+              const bt = b.createdAt?.seconds ?? 0;
+              return bt - at;
+            });
           renderAll();
         });
 
