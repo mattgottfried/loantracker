@@ -103,6 +103,26 @@
 
     .main { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
 
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+    .btn-add-lender {
+      background: #2b6cb0;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-add-lender:hover { background: #2c5282; }
+
     .cards {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -124,7 +144,8 @@
       justify-content: space-between;
       gap: 0.5rem;
     }
-    .card-header h2 { font-size: 1.1rem; font-weight: 700; }
+    .card-header h2 { font-size: 1.1rem; font-weight: 700; flex: 1; }
+    .card-actions { display: flex; gap: 0.4rem; }
     .btn-add {
       background: #2b6cb0;
       color: #fff;
@@ -137,6 +158,18 @@
       white-space: nowrap;
     }
     .btn-add:hover { background: #2c5282; }
+    .btn-delete-lender {
+      background: #fff5f5;
+      color: #c53030;
+      border: 1px solid #fed7d7;
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-delete-lender:hover { background: #fed7d7; }
 
     .stats {
       display: grid;
@@ -221,7 +254,7 @@
     .btn-delete:hover { opacity: 1; }
     .empty-msg { font-size: 0.82rem; color: #a0aec0; text-align: center; padding: 0.75rem 0; }
 
-    /* ── Modal ── */
+    /* ── Modals ── */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -274,6 +307,28 @@
     }
     .type-btn.active-cash    { border-color: #2b6cb0; background: #ebf8ff; color: #2b6cb0; }
     .type-btn.active-expense { border-color: #dd6b20; background: #fffaf0; color: #dd6b20; }
+
+    .emoji-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+    .emoji-btn {
+      font-size: 1.4rem;
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 7px;
+      width: 2.4rem;
+      height: 2.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .emoji-btn.selected { border-color: #2b6cb0; background: #ebf8ff; }
+
     .modal-footer {
       padding: 0.85rem 1.25rem;
       border-top: 1px solid #e2e8f0;
@@ -341,14 +396,17 @@
     </div>
   </header>
   <div class="main">
+    <div class="toolbar">
+      <button class="btn-add-lender" onclick="openAddLenderModal()">＋ Add Lender</button>
+    </div>
     <div class="cards" id="cards-container"></div>
   </div>
 </div>
 
 <!-- Payment Modal -->
-<div class="modal-backdrop" id="modal-backdrop">
+<div class="modal-backdrop" id="payment-modal">
   <div class="modal" role="dialog" aria-modal="true">
-    <div class="modal-header" id="modal-title">Add Payment</div>
+    <div class="modal-header" id="payment-modal-title">Add Payment</div>
     <div class="modal-body">
       <div class="form-group">
         <label>Type</label>
@@ -369,11 +427,37 @@
         <label for="input-date">Date</label>
         <input type="date" id="input-date" />
       </div>
-      <div class="error-msg" id="modal-error"></div>
+      <div class="error-msg" id="payment-modal-error"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-submit" id="btn-submit" onclick="submitPayment()">Save Payment</button>
+      <button class="btn-cancel" onclick="closePaymentModal()">Cancel</button>
+      <button class="btn-submit" id="btn-submit-payment" onclick="submitPayment()">Save Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Lender Modal -->
+<div class="modal-backdrop" id="lender-modal">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-header">Add Lender</div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="input-lender-name">Name</label>
+        <input type="text" id="input-lender-name" placeholder="e.g. Uncle Bob, Dad…" maxlength="50" />
+      </div>
+      <div class="form-group">
+        <label>Icon</label>
+        <div class="emoji-picker" id="emoji-picker"></div>
+      </div>
+      <div class="form-group">
+        <label for="input-lender-amount">Starting Loan Amount ($) <span style="font-weight:400;color:#718096">(optional)</span></label>
+        <input type="number" id="input-lender-amount" min="0" step="0.01" placeholder="0.00" />
+      </div>
+      <div class="error-msg" id="lender-modal-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeLenderModal()">Cancel</button>
+      <button class="btn-submit" id="btn-submit-lender" onclick="submitLender()">Add Lender</button>
     </div>
   </div>
 </div>
@@ -383,8 +467,8 @@
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
-    getFirestore, collection, doc, setDoc, getDoc, onSnapshot,
-    addDoc, deleteDoc, query, where, orderBy, serverTimestamp
+    getFirestore, collection, doc, setDoc, onSnapshot,
+    addDoc, deleteDoc, writeBatch, query, where, serverTimestamp, getDocs
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -401,12 +485,19 @@
   const auth = getAuth(firebaseApp);
   const db   = getFirestore(firebaseApp);
 
-  const LENDERS = [
+  const EMOJI_OPTIONS = ["👩","👵","👨","👴","👫","👪","🧑","🤝","💛","🏠","💰","🤲","🙏","⭐","💼"];
+  const DEFAULT_EMOJI = "🧑";
+
+  // Seed lenders for existing accounts (only created if missing)
+  const SEED_LENDERS = [
     { id: "mil",     name: "Mother-in-Law", emoji: "👩" },
     { id: "grandma", name: "Grandmother",   emoji: "👵" },
   ];
 
-  const state = { lenders: {}, payments: {} };
+  const state = {
+    lenderList: [],  // [{id, name, emoji, originalAmount, createdAt}]
+    payments: {},    // lenderId -> [payment]
+  };
   let activeListeners = [];
 
   // ── Auth ───────────────────────────────────────────────────────────────────
@@ -422,18 +513,14 @@
   document.getElementById("btn-signout").onclick = () => signOut(auth);
 
   onAuthStateChanged(auth, user => {
-    if (user) {
-      showApp(user);
-    } else {
-      showLogin();
-    }
+    if (user) showApp(user);
+    else       showLogin();
   });
 
   function showLogin() {
     document.getElementById("login-screen").style.display = "flex";
     document.getElementById("app").style.display = "none";
-    // Detach Firestore listeners
-    activeListeners.forEach(unsub => unsub());
+    activeListeners.forEach(u => u());
     activeListeners = [];
   }
 
@@ -441,62 +528,68 @@
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("app").style.display = "block";
 
-    // User info in header
     document.getElementById("user-info").innerHTML =
       `<div class="user-name">${escHtml(user.displayName || "")}</div>
        <div class="user-email">${escHtml(user.email || "")}</div>`;
 
     const avatarWrap = document.getElementById("user-avatar-wrap");
-    if (user.photoURL) {
-      avatarWrap.innerHTML = `<img class="avatar" src="${escHtml(user.photoURL)}" alt="avatar" referrerpolicy="no-referrer" />`;
-    } else {
-      avatarWrap.innerHTML = `<div class="avatar-placeholder">👤</div>`;
-    }
+    avatarWrap.innerHTML = user.photoURL
+      ? `<img class="avatar" src="${escHtml(user.photoURL)}" alt="avatar" referrerpolicy="no-referrer" />`
+      : `<div class="avatar-placeholder">👤</div>`;
 
     initData(user.uid);
   }
 
-  // ── Firestore ──────────────────────────────────────────────────────────────
-  async function ensureLenderDoc(uid, lender) {
-    const ref = doc(db, "users", uid, "lenders", lender.id);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      await setDoc(ref, { name: lender.name, originalAmount: 0, createdAt: serverTimestamp() });
+  // ── Data ───────────────────────────────────────────────────────────────────
+  async function seedLenders(uid) {
+    const batch = writeBatch(db);
+    let needsCommit = false;
+    for (const l of SEED_LENDERS) {
+      const ref = doc(db, "users", uid, "lenders", l.id);
+      // setDoc with merge:false only if missing — use merge so we don't overwrite existing amounts
+      const snap = await getDocs(query(collection(db, "users", uid, "lenders")));
+      const ids  = snap.docs.map(d => d.id);
+      if (!ids.includes(l.id)) {
+        batch.set(ref, { name: l.name, emoji: l.emoji, originalAmount: 0, createdAt: serverTimestamp() });
+        needsCommit = true;
+      }
     }
+    if (needsCommit) await batch.commit();
   }
 
   function initData(uid) {
-    // Reset state
-    state.lenders = {};
-    state.payments = {};
+    state.lenderList = [];
+    state.payments   = {};
     renderAll();
 
-    Promise.all(LENDERS.map(l => ensureLenderDoc(uid, l))).then(() => {
-      for (const lender of LENDERS) {
-        const lenderRef = doc(db, "users", uid, "lenders", lender.id);
-        const unsub1 = onSnapshot(lenderRef, snap => {
-          state.lenders[lender.id] = snap.data() || {};
-          renderAll();
-        });
+    seedLenders(uid).then(() => {
+      // Listen to all lenders
+      const lendersUnsub = onSnapshot(collection(db, "users", uid, "lenders"), snap => {
+        state.lenderList = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0));
+        renderAll();
+      });
 
-        const q = query(
-          collection(db, "users", uid, "payments"),
-          where("lenderId", "==", lender.id)
-        );
-        const unsub2 = onSnapshot(q, snap => {
-          state.payments[lender.id] = snap.docs
-            .map(d => ({ id: d.id, ...d.data() }))
-            .sort((a, b) => {
-              if (b.date !== a.date) return b.date.localeCompare(a.date);
-              const at = a.createdAt?.seconds ?? 0;
-              const bt = b.createdAt?.seconds ?? 0;
-              return bt - at;
-            });
-          renderAll();
-        });
+      // Listen to ALL payments at once, group client-side
+      const paymentsUnsub = onSnapshot(collection(db, "users", uid, "payments"), snap => {
+        const grouped = {};
+        for (const d of snap.docs) {
+          const p = { id: d.id, ...d.data() };
+          if (!grouped[p.lenderId]) grouped[p.lenderId] = [];
+          grouped[p.lenderId].push(p);
+        }
+        for (const id of Object.keys(grouped)) {
+          grouped[id].sort((a, b) => {
+            if (b.date !== a.date) return b.date.localeCompare(a.date);
+            return (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0);
+          });
+        }
+        state.payments = grouped;
+        renderAll();
+      });
 
-        activeListeners.push(unsub1, unsub2);
-      }
+      activeListeners.push(lendersUnsub, paymentsUnsub);
     });
   }
 
@@ -510,17 +603,20 @@
   }
 
   function renderCard(lender) {
-    const data        = state.lenders[lender.id] || {};
     const pymnts      = state.payments[lender.id] || [];
-    const original    = Number(data.originalAmount || 0);
+    const original    = Number(lender.originalAmount || 0);
     const totalRepaid = pymnts.reduce((s, p) => s + Number(p.amount), 0);
     const balance     = original - totalRepaid;
+    const emoji       = lender.emoji || DEFAULT_EMOJI;
 
     return `
-      <div class="card" id="card-${lender.id}">
+      <div class="card" id="card-${escHtml(lender.id)}">
         <div class="card-header">
-          <h2>${lender.emoji} ${lender.name}</h2>
-          <button class="btn-add" onclick="openModal('${lender.id}')">+ Add Payment</button>
+          <h2>${escHtml(emoji)} ${escHtml(lender.name)}</h2>
+          <div class="card-actions">
+            <button class="btn-add" onclick="openPaymentModal('${escHtml(lender.id)}')">+ Add Payment</button>
+            <button class="btn-delete-lender" onclick="deleteLender('${escHtml(lender.id)}', '${escHtml(lender.name)}')">Remove</button>
+          </div>
         </div>
         <div class="stats">
           <div class="stat">
@@ -537,10 +633,10 @@
           </div>
         </div>
         <div class="loan-amount-row">
-          <label for="loan-input-${lender.id}">Loan amount:</label>
-          <input type="number" id="loan-input-${lender.id}" min="0" step="0.01"
+          <label for="loan-input-${escHtml(lender.id)}">Loan amount:</label>
+          <input type="number" id="loan-input-${escHtml(lender.id)}" min="0" step="0.01"
             value="${original || ""}" placeholder="0.00" />
-          <button class="btn-save-loan" onclick="saveLoanAmount('${lender.id}')">Save</button>
+          <button class="btn-save-loan" onclick="saveLoanAmount('${escHtml(lender.id)}')">Save</button>
         </div>
         <div class="history">
           <h3>Payment History</h3>
@@ -558,7 +654,7 @@
                   </div>
                   <div class="payment-right">
                     <span class="payment-amount">${fmt(p.amount)}</span>
-                    <button class="btn-delete" title="Delete" onclick="deletePayment('${p.id}', '${lender.id}')">✕</button>
+                    <button class="btn-delete" title="Delete" onclick="deletePayment('${p.id}')">✕</button>
                   </div>
                 </li>`).join("")}
           </ul>
@@ -567,7 +663,10 @@
   }
 
   function renderAll() {
-    document.getElementById("cards-container").innerHTML = LENDERS.map(renderCard).join("");
+    document.getElementById("cards-container").innerHTML =
+      state.lenderList.length === 0
+        ? `<p style="color:#a0aec0;font-size:0.9rem;">No lenders yet — click "Add Lender" to get started.</p>`
+        : state.lenderList.map(renderCard).join("");
   }
 
   // ── Loan amount ────────────────────────────────────────────────────────────
@@ -579,25 +678,26 @@
     await setDoc(doc(db, "users", uid, "lenders", lenderId), { originalAmount: val }, { merge: true });
   };
 
-  // ── Modal ──────────────────────────────────────────────────────────────────
+  // ── Payment Modal ──────────────────────────────────────────────────────────
   let currentLenderId = null;
   let currentType = "cash";
 
-  window.openModal = function(lenderId) {
+  window.openPaymentModal = function(lenderId) {
     currentLenderId = lenderId;
-    const lender = LENDERS.find(l => l.id === lenderId);
-    document.getElementById("modal-title").textContent = `Add Payment — ${lender.emoji} ${lender.name}`;
+    const lender = state.lenderList.find(l => l.id === lenderId);
+    document.getElementById("payment-modal-title").textContent =
+      `Add Payment — ${lender?.emoji || ""} ${lender?.name || ""}`;
     document.getElementById("input-amount").value = "";
     document.getElementById("input-desc").value = "";
     document.getElementById("input-date").value = new Date().toISOString().slice(0, 10);
-    document.getElementById("modal-error").textContent = "";
+    document.getElementById("payment-modal-error").textContent = "";
     setType("cash");
-    document.getElementById("modal-backdrop").classList.add("open");
+    document.getElementById("payment-modal").classList.add("open");
     setTimeout(() => document.getElementById("input-amount").focus(), 50);
   };
 
-  window.closeModal = function() {
-    document.getElementById("modal-backdrop").classList.remove("open");
+  window.closePaymentModal = function() {
+    document.getElementById("payment-modal").classList.remove("open");
     currentLenderId = null;
   };
 
@@ -612,33 +712,27 @@
     const amount = parseFloat(document.getElementById("input-amount").value);
     const desc   = document.getElementById("input-desc").value.trim();
     const date   = document.getElementById("input-date").value;
-    const errEl  = document.getElementById("modal-error");
+    const errEl  = document.getElementById("payment-modal-error");
     errEl.textContent = "";
 
-    if (!uid)                       { errEl.textContent = "Not signed in."; return; }
-    if (!amount || amount <= 0)     { errEl.textContent = "Please enter a valid amount."; return; }
-    if (!desc)                      { errEl.textContent = "Please add a description."; return; }
-    if (!date)                      { errEl.textContent = "Please select a date."; return; }
+    if (!uid)                   { errEl.textContent = "Not signed in."; return; }
+    if (!amount || amount <= 0) { errEl.textContent = "Please enter a valid amount."; return; }
+    if (!desc)                  { errEl.textContent = "Please add a description."; return; }
+    if (!date)                  { errEl.textContent = "Please select a date."; return; }
 
-    const btn = document.getElementById("btn-submit");
-    btn.disabled = true;
-    btn.textContent = "Saving…";
+    const btn = document.getElementById("btn-submit-payment");
+    btn.disabled = true; btn.textContent = "Saving…";
 
     try {
       await addDoc(collection(db, "users", uid, "payments"), {
-        lenderId: currentLenderId,
-        type: currentType,
-        amount,
-        description: desc,
-        date,
-        createdAt: serverTimestamp(),
+        lenderId: currentLenderId, type: currentType,
+        amount, description: desc, date, createdAt: serverTimestamp(),
       });
-      closeModal();
+      closePaymentModal();
     } catch (e) {
       errEl.textContent = "Error saving: " + e.message;
     } finally {
-      btn.disabled = false;
-      btn.textContent = "Save Payment";
+      btn.disabled = false; btn.textContent = "Save Payment";
     }
   };
 
@@ -649,10 +743,86 @@
     await deleteDoc(doc(db, "users", uid, "payments", paymentId));
   };
 
-  document.getElementById("modal-backdrop").addEventListener("click", e => {
-    if (e.target === e.currentTarget) closeModal();
+  // ── Add Lender Modal ───────────────────────────────────────────────────────
+  let selectedEmoji = "👩";
+
+  window.openAddLenderModal = function() {
+    selectedEmoji = "👩";
+    document.getElementById("input-lender-name").value   = "";
+    document.getElementById("input-lender-amount").value = "";
+    document.getElementById("lender-modal-error").textContent = "";
+    renderEmojiPicker();
+    document.getElementById("lender-modal").classList.add("open");
+    setTimeout(() => document.getElementById("input-lender-name").focus(), 50);
+  };
+
+  window.closeLenderModal = function() {
+    document.getElementById("lender-modal").classList.remove("open");
+  };
+
+  function renderEmojiPicker() {
+    document.getElementById("emoji-picker").innerHTML = EMOJI_OPTIONS.map(e => `
+      <button class="emoji-btn${e === selectedEmoji ? " selected" : ""}"
+        onclick="selectEmoji('${e}')" type="button">${e}</button>
+    `).join("");
+  }
+
+  window.selectEmoji = function(emoji) {
+    selectedEmoji = emoji;
+    renderEmojiPicker();
+  };
+
+  window.submitLender = async function() {
+    const uid    = auth.currentUser?.uid;
+    const name   = document.getElementById("input-lender-name").value.trim();
+    const amount = parseFloat(document.getElementById("input-lender-amount").value) || 0;
+    const errEl  = document.getElementById("lender-modal-error");
+    errEl.textContent = "";
+
+    if (!uid)  { errEl.textContent = "Not signed in."; return; }
+    if (!name) { errEl.textContent = "Please enter a name."; return; }
+
+    const btn = document.getElementById("btn-submit-lender");
+    btn.disabled = true; btn.textContent = "Adding…";
+
+    try {
+      await addDoc(collection(db, "users", uid, "lenders"), {
+        name, emoji: selectedEmoji, originalAmount: amount, createdAt: serverTimestamp(),
+      });
+      closeLenderModal();
+    } catch (e) {
+      errEl.textContent = "Error: " + e.message;
+    } finally {
+      btn.disabled = false; btn.textContent = "Add Lender";
+    }
+  };
+
+  // ── Delete Lender ──────────────────────────────────────────────────────────
+  window.deleteLender = async function(lenderId, lenderName) {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    if (!confirm(`Remove "${lenderName}" and all their payments? This cannot be undone.`)) return;
+
+    // Delete all payments for this lender then delete the lender doc
+    const paymentsSnap = await getDocs(
+      query(collection(db, "users", uid, "payments"), where("lenderId", "==", lenderId))
+    );
+    const batch = writeBatch(db);
+    paymentsSnap.docs.forEach(d => batch.delete(d.ref));
+    batch.delete(doc(db, "users", uid, "lenders", lenderId));
+    await batch.commit();
+  };
+
+  // ── Modal backdrop / keyboard close ───────────────────────────────────────
+  document.getElementById("payment-modal").addEventListener("click", e => {
+    if (e.target === e.currentTarget) closePaymentModal();
   });
-  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+  document.getElementById("lender-modal").addEventListener("click", e => {
+    if (e.target === e.currentTarget) closeLenderModal();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") { closePaymentModal(); closeLenderModal(); }
+  });
 </script>
 </body>
 </html>
