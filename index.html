@@ -14,14 +14,92 @@
       min-height: 100vh;
     }
 
+    /* ── Login screen ── */
+    #login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      padding: 2.5rem 2rem;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .login-card .house { font-size: 3rem; }
+    .login-card h1 { font-size: 1.4rem; font-weight: 700; }
+    .login-card p { color: #718096; font-size: 0.9rem; }
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      background: #fff;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.7rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      color: #1a202c;
+      transition: background 0.15s;
+    }
+    .btn-google:hover { background: #f7fafc; border-color: #cbd5e0; }
+    .btn-google svg { flex-shrink: 0; }
+    .login-error { color: #c53030; font-size: 0.82rem; }
+
+    /* ── App shell ── */
+    #app { display: none; }
+
     header {
       background: #2b6cb0;
       color: #fff;
-      padding: 1.25rem 1.5rem;
-      text-align: center;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    header h1 { font-size: 1.5rem; font-weight: 700; }
-    header p { font-size: 0.85rem; opacity: 0.8; margin-top: 0.25rem; }
+    .header-left h1 { font-size: 1.25rem; font-weight: 700; }
+    .header-left p { font-size: 0.78rem; opacity: 0.8; margin-top: 0.1rem; }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+    .user-info { text-align: right; }
+    .user-name { font-size: 0.82rem; font-weight: 600; }
+    .user-email { font-size: 0.72rem; opacity: 0.75; }
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.4);
+      object-fit: cover;
+    }
+    .avatar-placeholder {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .btn-signout {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      border-radius: 6px;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-signout:hover { background: rgba(255,255,255,0.25); }
 
     .main { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
 
@@ -38,7 +116,6 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.10);
       overflow: hidden;
     }
-
     .card-header {
       padding: 1rem 1.25rem 0.75rem;
       border-bottom: 1px solid #e2e8f0;
@@ -48,7 +125,6 @@
       gap: 0.5rem;
     }
     .card-header h2 { font-size: 1.1rem; font-weight: 700; }
-
     .btn-add {
       background: #2b6cb0;
       color: #fff;
@@ -65,19 +141,15 @@
     .stats {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 0;
       border-bottom: 1px solid #e2e8f0;
     }
-    .stat {
-      padding: 0.75rem 1rem;
-      text-align: center;
-    }
+    .stat { padding: 0.75rem 1rem; text-align: center; }
     .stat + .stat { border-left: 1px solid #e2e8f0; }
     .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: #718096; }
     .stat-value { font-size: 1.1rem; font-weight: 700; margin-top: 0.15rem; }
     .stat-value.green { color: #276749; }
-    .stat-value.red { color: #c53030; }
-    .stat-value.blue { color: #2b6cb0; }
+    .stat-value.red   { color: #c53030; }
+    .stat-value.blue  { color: #2b6cb0; }
 
     .loan-amount-row {
       padding: 0.6rem 1.25rem;
@@ -109,9 +181,7 @@
 
     .history { padding: 0.75rem 1.25rem; }
     .history h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #718096; margin-bottom: 0.5rem; }
-
     .payment-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
-
     .payment-item {
       display: flex;
       align-items: flex-start;
@@ -132,7 +202,7 @@
       white-space: nowrap;
       margin-top: 0.1rem;
     }
-    .badge-cash { background: #bee3f8; color: #2a69ac; }
+    .badge-cash    { background: #bee3f8; color: #2a69ac; }
     .badge-expense { background: #feebc8; color: #c05621; }
     .payment-desc { font-size: 0.82rem; }
     .payment-date { font-size: 0.72rem; color: #a0aec0; }
@@ -149,10 +219,9 @@
       opacity: 0.6;
     }
     .btn-delete:hover { opacity: 1; }
-
     .empty-msg { font-size: 0.82rem; color: #a0aec0; text-align: center; padding: 0.75rem 0; }
 
-    /* Modal */
+    /* ── Modal ── */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -182,7 +251,6 @@
     .modal-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem; }
     .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: #4a5568; margin-bottom: 0.3rem; }
     .form-group input,
-    .form-group select,
     .form-group textarea {
       width: 100%;
       border: 1px solid #cbd5e0;
@@ -204,9 +272,8 @@
       cursor: pointer;
       text-align: center;
     }
-    .type-btn.active-cash { border-color: #2b6cb0; background: #ebf8ff; color: #2b6cb0; }
+    .type-btn.active-cash    { border-color: #2b6cb0; background: #ebf8ff; color: #2b6cb0; }
     .type-btn.active-expense { border-color: #dd6b20; background: #fffaf0; color: #dd6b20; }
-
     .modal-footer {
       padding: 0.85rem 1.25rem;
       border-top: 1px solid #e2e8f0;
@@ -236,20 +303,45 @@
     }
     .btn-submit:hover { background: #2c5282; }
     .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-
     .error-msg { color: #c53030; font-size: 0.78rem; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>🏡 Family Loan Tracker</h1>
-  <p>Tracking what you owe, one payment at a time</p>
-</header>
+<!-- Login Screen -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="house">🏡</div>
+    <h1>Family Loan Tracker</h1>
+    <p>Sign in to track your repayments to family.</p>
+    <button class="btn-google" id="btn-google-signin">
+      <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Sign in with Google
+    </button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
 
-<div class="main">
-  <div class="cards" id="cards-container">
-    <!-- cards rendered by JS -->
+<!-- App (shown after login) -->
+<div id="app">
+  <header>
+    <div class="header-left">
+      <h1>🏡 Family Loan Tracker</h1>
+      <p>Tracking what you owe, one payment at a time</p>
+    </div>
+    <div class="header-right">
+      <div class="user-info" id="user-info"></div>
+      <div id="user-avatar-wrap"></div>
+      <button class="btn-signout" id="btn-signout">Sign out</button>
+    </div>
+  </header>
+  <div class="main">
+    <div class="cards" id="cards-container"></div>
   </div>
 </div>
 
@@ -287,7 +379,9 @@
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, doc, setDoc, getDoc, onSnapshot,
     addDoc, deleteDoc, query, where, orderBy, serverTimestamp
@@ -303,27 +397,102 @@
     measurementId: "G-SN809D65J0"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const firebaseApp = initializeApp(firebaseConfig);
+  const auth = getAuth(firebaseApp);
+  const db   = getFirestore(firebaseApp);
 
   const LENDERS = [
-    { id: "mil",    name: "Mother-in-Law", emoji: "👩" },
-    { id: "grandma", name: "Grandmother",  emoji: "👵" },
+    { id: "mil",     name: "Mother-in-Law", emoji: "👩" },
+    { id: "grandma", name: "Grandmother",   emoji: "👵" },
   ];
 
-  // State
-  const state = {
-    lenders: {},   // id -> { originalAmount }
-    payments: {},  // id -> [payment, ...]
+  const state = { lenders: {}, payments: {} };
+  let activeListeners = [];
+
+  // ── Auth ───────────────────────────────────────────────────────────────────
+  document.getElementById("btn-google-signin").onclick = async () => {
+    document.getElementById("login-error").textContent = "";
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (e) {
+      document.getElementById("login-error").textContent = e.message;
+    }
   };
 
-  // ── Bootstrap lender docs ──────────────────────────────────────────────────
-  async function ensureLenderDoc(lender) {
-    const ref = doc(db, "lenders", lender.id);
+  document.getElementById("btn-signout").onclick = () => signOut(auth);
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      showApp(user);
+    } else {
+      showLogin();
+    }
+  });
+
+  function showLogin() {
+    document.getElementById("login-screen").style.display = "flex";
+    document.getElementById("app").style.display = "none";
+    // Detach Firestore listeners
+    activeListeners.forEach(unsub => unsub());
+    activeListeners = [];
+  }
+
+  function showApp(user) {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    // User info in header
+    document.getElementById("user-info").innerHTML =
+      `<div class="user-name">${escHtml(user.displayName || "")}</div>
+       <div class="user-email">${escHtml(user.email || "")}</div>`;
+
+    const avatarWrap = document.getElementById("user-avatar-wrap");
+    if (user.photoURL) {
+      avatarWrap.innerHTML = `<img class="avatar" src="${escHtml(user.photoURL)}" alt="avatar" referrerpolicy="no-referrer" />`;
+    } else {
+      avatarWrap.innerHTML = `<div class="avatar-placeholder">👤</div>`;
+    }
+
+    initData(user.uid);
+  }
+
+  // ── Firestore ──────────────────────────────────────────────────────────────
+  async function ensureLenderDoc(uid, lender) {
+    const ref = doc(db, "users", uid, "lenders", lender.id);
     const snap = await getDoc(ref);
     if (!snap.exists()) {
       await setDoc(ref, { name: lender.name, originalAmount: 0, createdAt: serverTimestamp() });
     }
+  }
+
+  function initData(uid) {
+    // Reset state
+    state.lenders = {};
+    state.payments = {};
+    renderAll();
+
+    Promise.all(LENDERS.map(l => ensureLenderDoc(uid, l))).then(() => {
+      for (const lender of LENDERS) {
+        const lenderRef = doc(db, "users", uid, "lenders", lender.id);
+        const unsub1 = onSnapshot(lenderRef, snap => {
+          state.lenders[lender.id] = snap.data() || {};
+          renderAll();
+        });
+
+        const q = query(
+          collection(db, "users", uid, "payments"),
+          where("lenderId", "==", lender.id),
+          orderBy("date", "desc"),
+          orderBy("createdAt", "desc")
+        );
+        const unsub2 = onSnapshot(q, snap => {
+          state.payments[lender.id] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          renderAll();
+        });
+
+        activeListeners.push(unsub1, unsub2);
+      }
+    });
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -331,12 +500,16 @@
     return "$" + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  function escHtml(s) {
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
   function renderCard(lender) {
-    const data   = state.lenders[lender.id] || {};
-    const pymnts = state.payments[lender.id] || [];
-    const original = Number(data.originalAmount || 0);
+    const data        = state.lenders[lender.id] || {};
+    const pymnts      = state.payments[lender.id] || [];
+    const original    = Number(data.originalAmount || 0);
     const totalRepaid = pymnts.reduce((s, p) => s + Number(p.amount), 0);
-    const balance = original - totalRepaid;
+    const balance     = original - totalRepaid;
 
     return `
       <div class="card" id="card-${lender.id}">
@@ -355,7 +528,7 @@
           </div>
           <div class="stat">
             <div class="stat-label">Still Owed</div>
-            <div class="stat-value ${balance > 0 ? 'red' : 'green'}">${fmt(balance)}</div>
+            <div class="stat-value ${balance > 0 ? "red" : "green"}">${fmt(balance)}</div>
           </div>
         </div>
         <div class="loan-amount-row">
@@ -375,7 +548,7 @@
                     <span class="badge badge-${p.type}">${p.type === "cash" ? "💵 Cash" : "🧾 Expense"}</span>
                     <div>
                       <div class="payment-desc">${escHtml(p.description || "")}</div>
-                      <div class="payment-date">${p.date || ""}</div>
+                      <div class="payment-date">${escHtml(p.date || "")}</div>
                     </div>
                   </div>
                   <div class="payment-right">
@@ -389,43 +562,16 @@
   }
 
   function renderAll() {
-    const container = document.getElementById("cards-container");
-    container.innerHTML = LENDERS.map(renderCard).join("");
-  }
-
-  function escHtml(s) {
-    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-  }
-
-  // ── Firestore listeners ────────────────────────────────────────────────────
-  function startListeners() {
-    for (const lender of LENDERS) {
-      // Lender doc
-      onSnapshot(doc(db, "lenders", lender.id), snap => {
-        state.lenders[lender.id] = snap.data() || {};
-        renderAll();
-      });
-
-      // Payments
-      const q = query(
-        collection(db, "payments"),
-        where("lenderId", "==", lender.id),
-        orderBy("date", "desc"),
-        orderBy("createdAt", "desc")
-      );
-      onSnapshot(q, snap => {
-        state.payments[lender.id] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderAll();
-      });
-    }
+    document.getElementById("cards-container").innerHTML = LENDERS.map(renderCard).join("");
   }
 
   // ── Loan amount ────────────────────────────────────────────────────────────
   window.saveLoanAmount = async function(lenderId) {
-    const input = document.getElementById(`loan-input-${lenderId}`);
-    const val = parseFloat(input.value);
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    const val = parseFloat(document.getElementById(`loan-input-${lenderId}`).value);
     if (isNaN(val) || val < 0) return;
-    await setDoc(doc(db, "lenders", lenderId), { originalAmount: val }, { merge: true });
+    await setDoc(doc(db, "users", uid, "lenders", lenderId), { originalAmount: val }, { merge: true });
   };
 
   // ── Modal ──────────────────────────────────────────────────────────────────
@@ -434,7 +580,6 @@
 
   window.openModal = function(lenderId) {
     currentLenderId = lenderId;
-    currentType = "cash";
     const lender = LENDERS.find(l => l.id === lenderId);
     document.getElementById("modal-title").textContent = `Add Payment — ${lender.emoji} ${lender.name}`;
     document.getElementById("input-amount").value = "";
@@ -453,29 +598,29 @@
 
   window.setType = function(type) {
     currentType = type;
-    const cashBtn    = document.getElementById("btn-type-cash");
-    const expenseBtn = document.getElementById("btn-type-expense");
-    cashBtn.className    = "type-btn" + (type === "cash"    ? " active-cash"    : "");
-    expenseBtn.className = "type-btn" + (type === "expense" ? " active-expense" : "");
+    document.getElementById("btn-type-cash").className    = "type-btn" + (type === "cash"    ? " active-cash"    : "");
+    document.getElementById("btn-type-expense").className = "type-btn" + (type === "expense" ? " active-expense" : "");
   };
 
   window.submitPayment = async function() {
+    const uid    = auth.currentUser?.uid;
     const amount = parseFloat(document.getElementById("input-amount").value);
     const desc   = document.getElementById("input-desc").value.trim();
     const date   = document.getElementById("input-date").value;
     const errEl  = document.getElementById("modal-error");
     errEl.textContent = "";
 
-    if (!amount || amount <= 0)   { errEl.textContent = "Please enter a valid amount."; return; }
-    if (!desc)                    { errEl.textContent = "Please add a description."; return; }
-    if (!date)                    { errEl.textContent = "Please select a date."; return; }
+    if (!uid)                       { errEl.textContent = "Not signed in."; return; }
+    if (!amount || amount <= 0)     { errEl.textContent = "Please enter a valid amount."; return; }
+    if (!desc)                      { errEl.textContent = "Please add a description."; return; }
+    if (!date)                      { errEl.textContent = "Please select a date."; return; }
 
     const btn = document.getElementById("btn-submit");
     btn.disabled = true;
     btn.textContent = "Saving…";
 
     try {
-      await addDoc(collection(db, "payments"), {
+      await addDoc(collection(db, "users", uid, "payments"), {
         lenderId: currentLenderId,
         type: currentType,
         amount,
@@ -492,27 +637,17 @@
     }
   };
 
-  window.deletePayment = async function(paymentId, lenderId) {
+  window.deletePayment = async function(paymentId) {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
     if (!confirm("Delete this payment?")) return;
-    await deleteDoc(doc(db, "payments", paymentId));
+    await deleteDoc(doc(db, "users", uid, "payments", paymentId));
   };
 
-  // Close modal on backdrop click
   document.getElementById("modal-backdrop").addEventListener("click", e => {
     if (e.target === e.currentTarget) closeModal();
   });
-
-  // Enter key submits modal
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape") closeModal();
-  });
-
-  // ── Init ───────────────────────────────────────────────────────────────────
-  (async () => {
-    renderAll(); // initial empty render
-    await Promise.all(LENDERS.map(ensureLenderDoc));
-    startListeners();
-  })();
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 </script>
 </body>
 </html>
